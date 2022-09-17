@@ -1,0 +1,67 @@
+---
+title: "Assignment_1"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+date: "2022-09-07"
+---
+This data set is from https://vincentarelbundock.github.io/Rdatasets/articles/data.html. It is number 61.
+
+Part 2: Import the data set
+```{r}
+DF <- read.csv("~/Downloads/NaturalGas.csv")
+```
+ Part 3: Descriptive Statistics
+```{r}
+summary(DF)
+```
+
+```{r}
+mean(DF$price)
+median(DF$price)
+range(DF$price)
+```
+
+```{r}
+median(DF$year)
+```
+```{r}
+mean (DF$eprice)
+median(DF$eprice)
+range((DF$eprice))
+```
+```{r}
+mean (DF$lprice)
+median(DF$lprice)
+range(DF$lprice)
+```
+```{r}
+mean (DF$oprice)
+median(DF$oprice)
+range(DF$oprice)
+```
+```{r}
+print(IQR(DF$price))
+print(IQR(DF$epice))
+print(IQR(DF$lprice))
+print(IQR(DF$oprice))
+      
+```
+```{r}
+list(DF$state)
+```
+Part 4: Transform that data
+```{r}
+summary(DF$consumption)
+summary(log10(DF$consumption))
+```
+Part 5: plots
+```{r}
+plot(DF$price)
+plot(DF$income)
+hist(DF$price)
+hist(DF$income)
+```
+
+
