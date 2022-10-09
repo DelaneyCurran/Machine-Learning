@@ -1,0 +1,133 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+DF <- read.csv("~/Downloads/UniversalBank.csv")
+```
+```{r}
+summary(DF)
+```
+
+```{r}
+library(class)
+library(caret)
+library(ISLR)
+```
+
+```{r}
+norm_UB<- preProcess(DF,method = c('range'))
+UB_normalized<- predict(norm_UB,DF)
+
+q<- class2ind(as.factor(DF$Education))
+colnames(q) <- c('Edu1', 'Edu2', 'Edu3')
+DF_n<-cbind(DF[,1:7],q,DF[,9:14])
+```
+
+```{r}
+DF_n1 <-DF_n[,c(-1,-5,-12)]
+Index_train<- createDataPartition(DF_n$Personal.Loan, p=0.6, list=FALSE)
+Train_Predictors <-DF_n1[Index_train,]
+Test_Predictors<-DF_n1[-Index_train,]
+Labels<- DF_n$Personal.Loan
+Train_labels<- Labels[Index_train]
+Test_labels <- Labels[-Index_train]
+
+```
+
+```{r}
+Test1 <- c(40,10,84,2,2,0,1,0,0,0,0,1,1)
+```
+
+```{r}
+Predict_Test_labels<- knn(Train_Predictors,Test1, cl=Train_labels, k=1)
+Predict_Test_labels
+```
+1.) The customer would not get there loan accepted.
+
+
+```{r}
+Predict_Test_labels <- knn(Train_Predictors,Test_Predictors, cl= Train_labels, k=100, prob = TRUE)
+
+class_prob <- attr(Predict_Test_labels, 'prob')
+head(class_prob)
+
+```
+4.) 
+```{r}
+set.seed(123)
+search_grid <- expand.grid(k=1:15)
+model <- train(Personal.Loan ~., data = DF_n, method= "knn", tuneGrid=search_grid, preProcess= 'range' )
+model
+```
+2.) the perfict balance for k would be 6.
+
+```{r}
+Train_Predictors <- Train[,2:3]
+Test_Predictors <- Test[,2:3]
+
+Train_labels <- Train[,1]
+Test_labels <- Test[,1]
+
+Predict_Test_labels <- knn(Train_Predictors, Test_Predictors, cl= Train_labels, k=6)
+
+head(Predict_Test_labels)
+```
+```{r}
+Train_Predictors <- Train[,2:3]
+Test_Predictors <- Test[,2:3]
+
+Train_labels <- Train[,1]
+Test_labels <- Test[,1]
+
+Predict_Test_labels <- knn(Train_Predictors, Test_Predictors, cl= Train_labels, k=6)
+
+head(Predict_Test_labels)
+```
+3.) Confusion metric
+```{r}
+library(gmodels)
+CrossTable(x=Test_labels, y=Predict_Test_labels, prop.chisq = FALSE)
+```
+
+```{r}
+set.seed(123)
+search_grid <- expand.grid(k=1:30)
+model <- train(Personal.Loan ~., data = DF_n, method= "knn", tuneGrid=search_grid, preProcess= 'range' )
+model
+```
+```{r}
+Train1 = createDataPartition(DF$Personal.Loan, p=0.50, list=FALSE)
+Val1 = createDataPartition(DF$Personal.Loan, p=0.30, list=FALSE)
+Test1 = createDataPartition(DF$Personal.Loan, p=0.20, list=FALSE)
+```
+```{r}
+Train_Data = DF[Train1,]
+Temp = DF[-Train1,]
+Test_Data = Temp[-Val1,]
+```
+
+```{r}
+set.seed(123)
+search_grid <- expand.grid(k=1:30)
+model <- train(Personal.Loan ~., data = Train_Data, method= "knn", tuneGrid=search_grid, preProcess= 'range' )
+model
+```
+```{r}
+set.seed(123)
+search_grid <- expand.grid(k=1:30)
+model <- train(Personal.Loan ~., data = Temp, method= "knn", tuneGrid=search_grid, preProcess= 'range' )
+model
+```
+```{r}
+set.seed(123)
+search_grid <- expand.grid(k=1:30)
+model <- train(Personal.Loan ~., data = Test_Data, method= "knn", tuneGrid=search_grid, preProcess= 'range' )
+model
+```
+```{r}
+CrossTable(x=Test_Data, y=Test_Data, prop.chisq = FALSE)
+```
+
+
