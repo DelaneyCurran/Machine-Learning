@@ -1,1 +1,72 @@
+---
+title: "Assignment_4"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+date: "2022-10-29"
+---
+```{r}
+DF <- read.csv("~/Downloads/Pharmaceuticals.csv")
+```
+
+```{r}
+library(tidyverse)
+library(factoextra)
+library(ISLR)
+library(flexclust)
+```
+```{r}
+df <- DF[,c(3:11)]
+summary(df)
+```
+```{r}
+df <- scale(df)
+distance <- get_dist(df)
+fviz_dist(distance)
+```
+```{r}
+k4 <-kmeans(df, centers = 5, nstart = 10)
+k4$center
+k4$size
+fviz_cluster(k4, data = df)
+```
+```{r}
+k4 = kcca(df, k=5, kccaFamily("kmedians"))
+k4
+```
+```{r}
+clusters_index <- predict(k4)
+image(k4)
+points(df, col=clusters_index, pch=19, cex=0.3)
+```
+
+```{r}
+fviz_nbclust(df, kmeans, method = "wss")
+fviz_nbclust(df, kmeans, method = "silhouette")
+```
+B. Cluster 1 has lowest Leverage.
+
+Cluster 2 has highest PE ratio, lowest ROE, lowest ROA, lowest Asset Turnover, lowest Net Profit Margin
+
+Cluster 3 has highest Market Cap, highest ROE, highest ROA, highest Asset Turnover
+
+Cluster 4 has highest Beta, highest Leverage, highest Rev growth and lowest Market Cap.
+
+Cluster 5 has highest Net Profit Margin, lowest Beta, lowest PE Ratio, lowest Rev growth.
+
+C. There is pattern in the clusters with respect to Media recommendation variable. Cluster 5 with highest Net Profit Margin, lowest Beta, lowest PE Ratio, lowest Rev growth have mostly Hold recommendation.
+
+D. We can name various clusters based on their dependence on the quantitative variables.
+
+Cluster 1 - Lowest Leverage cluster
+
+Cluster 2 - High PE ratio, Low ROE, ROA, Asset Turnover, Net Profit Margin Cluster
+
+Cluster 3 - High Market Cap, ROE, ROA, Asset Turnover cluster
+
+Cluster 4 - High Beta, Leverage, Rev growth and Low Market Cap cluster
+
+Cluster 5 - High Net Profit Margin, Low Beta, PE Ratio, Rev growth cluster
+
 
