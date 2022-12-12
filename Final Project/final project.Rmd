@@ -1,0 +1,124 @@
+---
+title: "ml"
+output:
+  word_document: default
+  html_document: default
+date: "2022-12-06"
+---
+```{r}
+hr <- read.csv("~/Downloads/human-rights-vdem.csv")
+```
+```{r}
+library(tidyverse)
+library(factoextra)
+library(ISLR)
+library(flexclust)
+library(knitr)
+library(stats)
+library(cluster)
+```
+
+```{r}
+summary(hr)
+```
+```{r}
+hr1 <- hr[,c(3:6)]
+summary(hr1)
+```
+```{r}
+USA <- hr[c(31024:31084),c(1:6)]
+summary(USA)
+```
+```{r}
+USA1 <- hr[c(31024:31084),c(3:6)]
+summary(USA1)
+```
+```{r}
+USA2 <- hr[c(30853:31084),c(3:6)]
+summary(USA2)
+```
+
+```{r}
+hist(hr$civ_libs_vdem_owid, col= "salmon" , border = 'black', main="Distribution of Civil Liberties", xlab="Civil Liberties Scores")
+hist(hr$civ_libs_vdem_high_owid, col = "light green" , border = 'black', main="Distribution of Civil Liberties (High)", xlab="Civil Liberties Scores")
+hist(hr$civ_libs_vdem_low_owid, col ="light blue", border = 'black', main="Distribution of Civil Liberties (Low)", xlab="Civil Liberties Scores")
+```
+```{r}
+hist(USA1$civ_libs_vdem_owid, col= "salmon" , border = 'black', main="Distribution of Civil Liberties in the US", xlab="Civil Liberties Scores")
+hist(USA1$civ_libs_vdem_high_owid, col = "light green" , border = 'black', main="Distribution of Civil Liberties in the US (High)", xlab="Civil Liberties Scores")
+hist(USA1$civ_libs_vdem_low_owid, col ="light blue", border = 'black', main="Distribution of Civil Liberties in the US (Low)", xlab="Civil Liberties Scores")
+```
+
+
+
+```{r}
+k4 <-kmeans(hr1, centers = 5, nstart = 10)
+k4$center
+k4$size
+fviz_cluster(k4, data = hr1)
+```
+```{r}
+k4 = kcca(hr1, k=5, kccaFamily("kmedians"))
+k4
+```
+```{r}
+library(knitr)
+library(stats)
+library(cluster)
+```
+```{r}
+numericaldata <- data.frame(hr[,3:6])
+OmitMissing <- na.omit(numericaldata)
+Normalise <- scale(OmitMissing)
+```
+
+```{r}
+Distance <- dist(Normalise, method = "euclidean")
+
+Clustering_heirarchial <- hclust(Distance, method = "complete")
+plot(Clustering_heirarchial)
+```
+
+
+```{r}
+k4 <-kmeans(USA1, centers = 2, nstart = 10)
+k4$center
+k4$size
+fviz_cluster(k4, data = USA1)
+```
+```{r}
+numericaldata1 <- data.frame(USA[,3:6])
+OmitMissing1 <- na.omit(numericaldata1)
+Normalise1 <- scale(OmitMissing1)
+```
+
+```{r}
+Distance1 <- dist(Normalise1, method = "euclidean")
+
+Clustering_heirarchial1 <- hclust(Distance1, method = "complete")
+plot(Clustering_heirarchial1)
+```
+```{r}
+plot(Clustering_heirarchial1)
+rect.hclust(Clustering_heirarchial1, k = 2, border = "lightblue")
+```
+```{r}
+singleCH <- agnes(Normalise1, method = "single")
+completeCH <- agnes(Normalise1, method = "complete")
+averageCH <- agnes(Normalise1, method = "average")
+wardCH <- agnes(Normalise1, method = "ward")
+
+print(singleCH$civ_libs_vdem_owid)
+print(completeCH$civ_libs_vdem_owid)
+print(averageCH$civ_libs_vdem_owid)
+print(wardCH$civ_libs_vdem_owid)
+
+pltree(wardCH, cex = .5, hang = -2, main = 'Dendrogram of agnes-Ward')
+
+cutree(wardCH, k = 4)
+```
+```{r}
+fviz_nbclust(USA1, kmeans, method = "wss")
+fviz_nbclust(USA1, kmeans, method = "silhouette")
+```
+
